@@ -2,9 +2,17 @@
 
 ## Overview
 
-AI Turn Co-Pilot is a web-based driving safety assistant built with Streamlit that simulates real-world driving scenarios to test and demonstrate adaptive AI-generated safety alerts. The application uses OpenAI's GPT models to generate context-aware, personalized alerts that help prevent car accidents, with a particular focus on misjudged turns and driver distraction.
+AI Turn Co-Pilot is a web-based driving safety assistant built with Streamlit that simulates real-world driving scenarios to test and demonstrate adaptive AI-generated safety alerts. The application uses OpenAI's GPT-5 model to generate context-aware, personalized alerts that help prevent car accidents, with a particular focus on misjudged turns and driver distraction.
 
 The system adapts its communication style based on user behavior history - if a driver repeatedly triggers the same safety scenario (e.g., drowsy driving), the alerts become progressively firmer and more urgent. This adaptive approach prevents alert fatigue by varying tone and phrasing while maintaining relevance.
+
+## Recent Changes (October 24, 2025)
+
+- **Initial Implementation**: Built complete AI Turn Co-Pilot MVP with all core features
+- **Escalation Logic**: Implemented correct adaptive behavior escalation (calm→moderate→firm→critical)
+- **Bug Fixes**: Resolved off-by-one errors in urgency level calculation and alert generation timing
+- **Testing**: Comprehensive end-to-end testing verified all scenarios work correctly
+- **UI Layout**: Optimized Current Alert section placement for better visibility
 
 ## User Preferences
 
@@ -29,8 +37,13 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: In-memory Python dictionaries for tracking scenario history and alert patterns
 - **Adaptive Logic**: 
   - Frequency tracking: Monitors how often each scenario is triggered
-  - Progressive escalation: Adjusts alert severity and tone based on repetition (1st, 2nd, 3rd+ occurrences)
+  - Progressive escalation: Adjusts alert severity and tone based on repetition with the following mapping:
+    - 1st occurrence: Calm tone with green indicator (🟢)
+    - 2nd occurrence: Moderate tone with yellow indicator (🟡)
+    - 3rd occurrence: Firm tone with orange indicator (🟠)
+    - 4th+ occurrences: Critical tone with red indicator (🔴)
   - Context awareness: Generates unique, varied alerts to prevent habituation
+  - Implementation: Count is incremented BEFORE alert generation to ensure correct urgency level is used in both UI and AI prompts
 
 ### Data Storage Solutions
 - **Storage Method**: In-memory session state (no persistent database)

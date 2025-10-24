@@ -2,8 +2,7 @@ import streamlit as st
 import os
 from datetime import datetime
 from openai import OpenAI
-import pyttsx3
-import threading
+import streamlit.components.v1 as components
 
 # the newest OpenAI model is "gpt-5" which was released August 7, 2025.
 # do not change this unless explicitly requested by the user
@@ -128,16 +127,21 @@ Generate only the alert message, nothing else."""
         return f"Alert: {scenario_name} detected. Please stay focused on the road."
 
 def speak_alert(text):
-    def speak():
-        try:
-            engine = pyttsx3.init()
-            engine.say(text)
-            engine.runAndWait()
-        except Exception as e:
-            st.error(f"Text-to-speech error: {str(e)}")
+    """Use browser's Web Speech API to play audio"""
+    # Escape single quotes in text to prevent JavaScript errors
+    safe_text = text.replace("'", "\\'").replace('"', '\\"')
     
-    thread = threading.Thread(target=speak)
-    thread.start()
+    speech_html = f"""
+    <script>
+        // Use the browser's built-in text-to-speech
+        var msg = new SpeechSynthesisUtterance('{safe_text}');
+        msg.rate = 1.0;
+        msg.pitch = 1.0;
+        msg.volume = 1.0;
+        window.speechSynthesis.speak(msg);
+    </script>
+    """
+    components.html(speech_html, height=0)
 
 def trigger_scenario(scenario_key):
     scenario = scenarios[scenario_key]
@@ -218,7 +222,6 @@ with col1:
         
         if st.button("🔊 Replay Alert (Audio)", use_container_width=True):
             speak_alert(st.session_state.current_alert)
-            st.info("Playing audio alert...")
 
 with col2:
     st.subheader("📊 Scenario Statistics")

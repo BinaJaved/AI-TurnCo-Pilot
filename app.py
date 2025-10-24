@@ -59,14 +59,16 @@ scenarios = {
 
 def get_urgency_level(scenario_name):
     count = st.session_state.scenario_history.get(scenario_name, 0)
-    if count == 0:
+    if count == 1:
         return "calm"
-    elif count == 1:
-        return "moderate"
     elif count == 2:
+        return "moderate"
+    elif count == 3:
         return "firm"
-    else:
+    elif count >= 4:
         return "critical"
+    else:
+        return "calm"
 
 def generate_adaptive_alert(scenario_name, scenario_description):
     count = st.session_state.scenario_history.get(scenario_name, 0)
@@ -78,7 +80,7 @@ def generate_adaptive_alert(scenario_name, scenario_description):
 
 Scenario: {scenario_name}
 Description: {scenario_description}
-Occurrence count: {count + 1} time(s)
+Occurrence count: {count} time(s)
 Urgency level: {urgency}
 
 Recent alerts (to avoid repetition): {recent_alerts if recent_alerts else "None"}
@@ -127,9 +129,9 @@ def trigger_scenario(scenario_key):
     if scenario_name not in st.session_state.scenario_history:
         st.session_state.scenario_history[scenario_name] = 0
     
-    alert_message = generate_adaptive_alert(scenario_name, scenario['description'])
-    
     st.session_state.scenario_history[scenario_name] += 1
+    
+    alert_message = generate_adaptive_alert(scenario_name, scenario['description'])
     
     alert_entry = {
         'scenario': scenario_name,
@@ -158,10 +160,12 @@ with col1:
     for idx, scenario_key in enumerate(scenario_keys):
         with cols[idx % 3]:
             if st.button(scenario_key, key=scenario_key, use_container_width=True):
-                trigger_scenario(scenario_key)
+                with st.spinner(f"Generating alert for {scenarios[scenario_key]['name']}..."):
+                    trigger_scenario(scenario_key)
                 st.rerun()
-    
-    if st.session_state.current_alert:
+
+if st.session_state.current_alert:
+    with col1:
         st.markdown("---")
         st.subheader("🔊 Current Alert")
         st.success(st.session_state.current_alert)

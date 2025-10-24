@@ -1,0 +1,57 @@
+Build a simple web app called AI Turn Co-Pilot using Python and Streamlit.
+
+The app should simulate real driving scenarios to test adaptive, generative AI alerts for preventing car accidents — especially misjudged turns.
+
+✅ App Requirements
+
+The UI should have buttons for testing driving situations, such as:
+
+🚗 Left Turn
+
+🚦 Distracted Driver
+
+🌧️ Rainy Weather
+
+🚶 Pedestrian Crossing
+
+😴 Drowsy Driver
+
+When a user clicks a scenario button, the app should:
+
+Send a descriptive prompt to an OpenAI model (GPT) that generates a context-specific driving alert.
+
+The alert should adapt based on previous user behavior — e.g., if the user triggered “drowsy driver” twice, make the next alert firmer or more personalized.
+
+Use varied tone and phrasing to avoid repetition (humans tune out identical alerts).
+
+Display the generated AI Alert text on the screen.
+
+Add a “Replay Alert” button that reads the AI’s response out loud using pyttsx3 or gTTS.
+
+Maintain a Scenario Log showing the last 5 alerts (so the app can adapt its responses based on history).
+
+Make the app lightweight and fast, with a simple, clean UI.
+
+⚙️ Behavior Adaptation Rules
+
+Track which scenarios were clicked most often (e.g., “drowsy driver” or “distracted driver”).
+
+If the same scenario repeats, slightly change the tone of future alerts — for example:
+
+1st time: “Heads up — you seem distracted. Let’s refocus.”
+
+2nd time: “You’ve been distracted again — please keep both eyes on the road.”
+
+3rd time: “Critical alert — distraction detected multiple times. Take a short break.”
+
+The app should store this minimal “memory” locally (e.g., in a Python dictionary or JSON file).
+
+🧠 AI Prompt Example
+Scenario: Drowsy Driver  
+Past Alerts: ["You seem distracted. Refocus on the road."]  
+Generate a calm, human-like voice alert that feels natural and non-repetitive.  
+Include slight tone variation to keep the driver attentive.
+
+🎯 Goal
+
+The goal is to demonstrate how adaptive, generative AI can simulate a personalized driving co-pilot that learns from user behavior and keeps the driver alert — unlike traditional, repetitive alerts in cars today.

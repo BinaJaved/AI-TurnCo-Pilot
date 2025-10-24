@@ -29,6 +29,15 @@ if 'alert_log' not in st.session_state:
 if 'current_alert' not in st.session_state:
     st.session_state.current_alert = None
 
+if 'current_scenario_name' not in st.session_state:
+    st.session_state.current_scenario_name = None
+
+if 'current_occurrence' not in st.session_state:
+    st.session_state.current_occurrence = 0
+
+if 'current_urgency' not in st.session_state:
+    st.session_state.current_urgency = "calm"
+
 scenarios = {
     "🚗 Left Turn": {
         "name": "Left Turn",
@@ -106,9 +115,17 @@ Generate only the alert message, nothing else."""
             messages=[{"role": "user", "content": prompt}],
             max_completion_tokens=150
         )
-        return response.choices[0].message.content.strip()
+        
+        alert_text = response.choices[0].message.content
+        if alert_text:
+            alert_text = alert_text.strip()
+        
+        if not alert_text:
+            alert_text = f"Alert: {scenario_name} detected. Please stay focused on the road."
+        
+        return alert_text
     except Exception as e:
-        return f"Alert: {scenario_name} detected. Please stay focused on the road. (Error: {str(e)})"
+        return f"Alert: {scenario_name} detected. Please stay focused on the road."
 
 def speak_alert(text):
     def speak():
@@ -147,6 +164,9 @@ def trigger_scenario(scenario_key):
         st.session_state.alert_log = st.session_state.alert_log[-5:]
     
     st.session_state.current_alert = alert_message
+    st.session_state.current_scenario_name = scenario_name
+    st.session_state.current_occurrence = st.session_state.scenario_history[scenario_name]
+    st.session_state.current_urgency = get_urgency_level(scenario_name)
 
 col1, col2 = st.columns([2, 1])
 
@@ -163,12 +183,38 @@ with col1:
                 with st.spinner(f"Generating alert for {scenarios[scenario_key]['name']}..."):
                     trigger_scenario(scenario_key)
                 st.rerun()
-
-if st.session_state.current_alert:
-    with col1:
+    
+    if st.session_state.current_alert:
         st.markdown("---")
-        st.subheader("🔊 Current Alert")
-        st.success(st.session_state.current_alert)
+        
+        urgency_info = {
+            "calm": {"color": "🟢", "label": "Calm", "message_type": "info", "bg_color": "#d4edda"},
+            "moderate": {"color": "🟡", "label": "Moderate", "message_type": "warning", "bg_color": "#fff3cd"},
+            "firm": {"color": "🟠", "label": "Firm", "message_type": "warning", "bg_color": "#ffe5cc"},
+            "critical": {"color": "🔴", "label": "Critical", "message_type": "error", "bg_color": "#f8d7da"}
+        }
+        
+        current_info = urgency_info.get(st.session_state.current_urgency, urgency_info["calm"])
+        
+        st.markdown(f"### {current_info['color']} Current Alert - {current_info['label']} Level")
+        st.markdown(f"**{st.session_state.current_scenario_name}** • Occurrence #{st.session_state.current_occurrence}")
+        
+        if st.session_state.current_urgency == "calm":
+            st.success(st.session_state.current_alert)
+        elif st.session_state.current_urgency == "moderate":
+            st.warning(st.session_state.current_alert)
+        elif st.session_state.current_urgency == "firm":
+            firm_container = st.container(border=True)
+            with firm_container:
+                st.markdown(f"""
+                <div style="padding: 0.5rem; border-radius: 0.25rem; background-color: #ff9800; color: white;">
+                    <strong>⚠️ {st.session_state.current_alert}</strong>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.error(f"🚨 {st.session_state.current_alert}")
+        
+        st.markdown(f"_This is your **{st.session_state.current_occurrence}{'st' if st.session_state.current_occurrence == 1 else ('nd' if st.session_state.current_occurrence == 2 else ('rd' if st.session_state.current_occurrence == 3 else 'th'))}** {st.session_state.current_scenario_name} alert. The AI adapts its tone based on repetition._")
         
         if st.button("🔊 Replay Alert (Audio)", use_container_width=True):
             speak_alert(st.session_state.current_alert)

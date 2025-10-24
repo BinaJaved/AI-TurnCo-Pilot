@@ -10,9 +10,15 @@ The system adapts its communication style based on user behavior history - if a 
 
 - **Initial Implementation**: Built complete AI Turn Co-Pilot MVP with all core features
 - **Escalation Logic**: Implemented correct adaptive behavior escalation (calm→moderate→firm→critical)
-- **Bug Fixes**: Resolved off-by-one errors in urgency level calculation and alert generation timing
-- **Testing**: Comprehensive end-to-end testing verified all scenarios work correctly
-- **UI Layout**: Optimized Current Alert section placement for better visibility
+- **Bug Fixes**: 
+  - Resolved off-by-one errors in urgency level calculation and alert generation timing
+  - Fixed Streamlit column context rendering issue preventing Current Alert section from displaying
+  - Implemented fallback mechanism for GPT-5 empty response bug
+- **UI Enhancements**: 
+  - Added visual differentiation for all urgency levels (green/yellow/orange/red styling)
+  - Implemented custom HTML styling for firm-level alerts with bordered container
+  - Added urgency-specific emojis (⚠️ for firm, 🚨 for critical)
+- **Testing**: Comprehensive end-to-end testing verified all scenarios and escalation levels work correctly
 
 ## User Preferences
 
@@ -71,6 +77,7 @@ Preferred communication style: Simple, everyday language.
   - Model: GPT-5 (latest as of August 2025)
   - Integration: Python `openai` client library
   - Authentication: API key via environment variable
+  - **Known Issues**: GPT-5 has a known bug where it sometimes returns empty content in responses. The application includes a fallback mechanism that uses a generic alert message when this occurs: "Alert: {scenario} detected. Please stay focused on the road."
 
 ### Python Libraries
 - **streamlit**: Web framework for building interactive data applications

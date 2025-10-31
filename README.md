@@ -1,7 +1,7 @@
 # 🚗 AI Turn Co-Pilot — Project Plan
 
 # Demo
-./demo.gif
+![Demo](./demo.gif)
 
 ### 🎯 **Objective**
 

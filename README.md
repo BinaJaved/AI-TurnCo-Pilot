@@ -1,5 +1,8 @@
 # 🚗 AI Turn Co-Pilot — Project Plan
 
+# Demo
+./demo.gif
+
 ### 🎯 **Objective**
 
 To build a **Generative AI-powered driving co-pilot** that delivers **adaptive, human-like alerts** before turns — helping drivers stay alert, especially when distracted, drowsy, or misjudging turns.
